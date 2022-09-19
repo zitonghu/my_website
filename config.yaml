@@ -106,8 +106,8 @@ params:
 #        title: Etiam
 #        url: blogs/ipsum
   two:
-    buttonText: Nice to meet you
+    buttonText: click here for more info
     enable: yes
     subtitle: "Thank you for visiting my website. I will update my data analysis project frequently. Please get in touch "
-    title: Massa libero
+    title: Nice to meet you
     url: blogs

@@ -101,10 +101,10 @@ params:
         subtitle: IMDB ratings
         title: Data Analytics Project III
         url: blogs/HW1
-#      - image: pic06.jpg
-#        subtitle: Feugiat Amet Tempus
-#        title: Etiam
-#        url: blogs/ipsum
+      - image: banner.jpg
+        subtitle: my CV
+        title: CV
+        url: blogs/CV
   two:
     buttonText: click here for more info
     enable: yes

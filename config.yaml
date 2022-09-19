@@ -72,7 +72,7 @@ params:
       - name: Blogs
         url: blogs
       - name: Generic Blog
-        url: blogs/aliquam1
+        url: blogs
       - name: Blogs
         url: blogs
     menu: Menu

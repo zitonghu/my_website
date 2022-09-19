@@ -104,7 +104,7 @@ params:
       - image: banner.jpg
         subtitle: my CV
         title: CV
-        url: blogs/CV
+        url: blogs/CV.pdf
   two:
     buttonText: click here for more info
     enable: yes

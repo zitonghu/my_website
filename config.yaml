@@ -92,11 +92,11 @@ params:
       - image: my5.jpg
         subtitle: TFL bike rental analysis
         title: Data Analytics Project I
-        url: blogs/testtest.Rmd
+        url: blogs/HW2
       - image: my6.jpg
         subtitle: Brexit vote analysis
         title: Data Analytics Project II
-        url: blogs/ipsum
+        url: blogs/HW3
       - image: pic5.jpg
         subtitle: IMDB ratings
         title: Data Analytics Project III

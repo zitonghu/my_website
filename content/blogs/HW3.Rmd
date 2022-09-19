@@ -1,4 +1,5 @@
 ---
+slug: HW3
 title: "STudy Group 7: Homework 3"
 author: "Study Group 7: Thirat Wongwaisayawan, Lejla Kajevic, Francesco Nicolì, Zitong Hu, Rufei Wang, Siddharth Gulati"
 date: "`r Sys.Date()`"

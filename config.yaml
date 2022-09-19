@@ -100,19 +100,14 @@ params:
       - image: pic5.jpg
         subtitle: IMDB ratings
         title: Data Analytics Project III
-        url: blogs/ipsum
+        url: blogs/HW1
 #      - image: pic06.jpg
 #        subtitle: Feugiat Amet Tempus
 #        title: Etiam
 #        url: blogs/ipsum
   two:
-    buttonText: Get Started
+    buttonText: Nice to meet you
     enable: yes
-    subtitle: "Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero.
-      \r\n    Mauris aliquet magna magna sed nunc rhoncus pharetra. \r\n    Pellentesque
-      condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia
-      pellentesque lorem ipsum dolor. \r\n    Nullam et orci eu lorem consequat tincidunt.
-      Vivamus et sagittis libero.\r\n    Mauris aliquet magna magna sed nunc rhoncus
-      amet pharetra et feugiat tempus."
+    subtitle: "Thank you for visiting my website. I will update my data analysis project frequently. Please get in touch "
     title: Massa libero
     url: blogs

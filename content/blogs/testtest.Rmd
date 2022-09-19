@@ -1,15 +1,10 @@
 ---
-title: "Magna"
-date: '2017-10-31T22:26:09-05:00'
-description: Lorem Etiam Nullam
-draft: no
-image: pic09.jpg
-keywords: ''
-slug: magna
-categories:
-- ''
-- ''
+
+title: "testtest"
+output: html_document
 ---
+# Challenge 1: Excess rentals in TfL bike sharing
+
 
 
 ```{r, get_tfl_data, cache=TRUE}
@@ -93,3 +88,8 @@ labs(title = "Weekly changes in Tfl bike rental",
               caption = "Data source: TfL, London Data Store")
 
 ```
+
+### Should you use the mean or the median to calculate your expected rentals? Why?
+
+We use the mean to calculate the expected rentals. We used the mean to calculate our expected rentals because the TFL may be more inclined to use the data for profit and revenue analysis. Mean, instead of median, may be more accurate to represent the revenue from bike rental.
+

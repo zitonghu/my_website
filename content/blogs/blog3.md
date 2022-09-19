@@ -8,8 +8,14 @@ description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis mag
   sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem
   consequat tincidunt. Vivamus et sagittis tempus.
 draft: false
-image: pic08.jpg
+image: my8.jpg
 keywords: ""
 slug: tempus
-title: Tempus
+title: Fun facts
 ---
+
+- I love hiking, kayaking, oil painting, cooking, and birdwatching
+- I can speak seagull-nese
+- I used to have a pet squirrel
+- I play a traditional Chinese instrument called Guqin
+- I hate playing piano

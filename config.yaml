@@ -81,19 +81,19 @@ params:
   tiles:
     enable: yes
     showcase:
-      - image: pic3.jpg
-        subtitle: CV and self introduction
+      - image: my3.jpg
+        subtitle: self introduction
         title: About me
-        url: content/blogs/hHW2
-      - image: pic2.jpg
+        url: blogs/aliquam
+      - image: my4.jpg
         subtitle: hobbies and random things
         title: Fun facts
         url: blogs/tempus
-      - image: pic5.jpg
+      - image: my5.jpg
         subtitle: TFL bike rental analysis
         title: Data Analytics Project I
-        url: blogs/magna
-      - image: pic4.jpg
+        url: blogs/testtest.Rmd
+      - image: my6.jpg
         subtitle: Brexit vote analysis
         title: Data Analytics Project II
         url: blogs/ipsum

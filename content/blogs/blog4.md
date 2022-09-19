@@ -8,8 +8,15 @@ description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis mag
   sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem
   consequat tincidunt. Vivamus et sagittis tempus.
 draft: false
-image: pic07.jpg
+image: intro.jpg
 keywords: ""
 slug: aliquam
-title: Aliquam
+title: About me
 ---
+
+
+Hi! I'm Zitong Hu, a student in Master of Analytics and Management at LBS. Nice to meet you all :)
+
+Please visit my Linkedin page below for more information.
+https://www.linkedin.com/in/zitonghu/
+

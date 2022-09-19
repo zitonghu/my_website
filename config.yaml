@@ -58,7 +58,7 @@ params:
         label: LinkedIn
         url: https://www.linkedin.com/in/zitonghu/
   image: ''
-  name: Your name
+  name: Zitong Hu
   navigation:
     button1:
       - name: Get Started
@@ -72,12 +72,12 @@ params:
       - name: Blogs
         url: blogs
       - name: Generic Blog
-        url: blogs/ipsum
-      - name: Elements
-        url: elements.html
+        url: blogs/aliquam1
+      - name: Blogs
+        url: blogs
     menu: Menu
-    subtitle: By HTML5 Up
-    title: Forty
+    subtitle: Zitong Hu
+    title: Portfolio
   tiles:
     enable: yes
     showcase:

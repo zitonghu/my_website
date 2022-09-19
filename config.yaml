@@ -84,7 +84,7 @@ params:
       - image: my3.jpg
         subtitle: self introduction
         title: About me
-        url: blogs/aliquam
+        url: blogs/aliquam1
       - image: my4.jpg
         subtitle: hobbies and random things
         title: Fun facts

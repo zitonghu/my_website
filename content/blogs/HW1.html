@@ -1,0 +1,2922 @@
+---
+title: 'Session 2: Homework 1'
+author: "Study Group 7"
+date: "2022-09-19"
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    code_folding: show
+  pdf_document:
+    toc: yes
+---
+
+
+
+<div id="rents-in-san-francsisco-2000-2018" class="section level1">
+<h1>Rents in San Francsisco 2000-2018</h1>
+<pre class="r"><code># download directly off tidytuesdaygithub repo
+
+rent &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-05/rent.csv&#39;)</code></pre>
+<p>What are the variable types? Do they all correspond to what they really are? Which variables have most missing values?</p>
+<p>This dataset has 2 different types of data sets - character and double. All the variables correspond to the respective data types. The character data type is used for all text based variables like city, country, etc and the double precision data type is used for numeric and date variables. ‘descr’ has the most missing value, 197542. ‘adress’ has the second most missing value, of 196888.</p>
+<pre class="r"><code>skimr::skim(rent)</code></pre>
+<table>
+<caption>(#tab:skim_data)Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">rent</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">200796</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">17</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">8</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">9</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">post_id</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">9</td>
+<td align="right">14</td>
+<td align="right">0</td>
+<td align="right">200796</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">nhood</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">4</td>
+<td align="right">43</td>
+<td align="right">0</td>
+<td align="right">167</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">city</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">5</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">104</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">county</td>
+<td align="right">1394</td>
+<td align="right">0.99</td>
+<td align="right">4</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">10</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">address</td>
+<td align="right">196888</td>
+<td align="right">0.02</td>
+<td align="right">1</td>
+<td align="right">38</td>
+<td align="right">0</td>
+<td align="right">2869</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">title</td>
+<td align="right">2517</td>
+<td align="right">0.99</td>
+<td align="right">2</td>
+<td align="right">298</td>
+<td align="right">0</td>
+<td align="right">184961</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">descr</td>
+<td align="right">197542</td>
+<td align="right">0.02</td>
+<td align="right">13</td>
+<td align="right">16975</td>
+<td align="right">0</td>
+<td align="right">3025</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">details</td>
+<td align="right">192780</td>
+<td align="right">0.04</td>
+<td align="right">4</td>
+<td align="right">595</td>
+<td align="right">0</td>
+<td align="right">7667</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="8%" />
+<col width="12%" />
+<col width="8%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">date</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2.01e+07</td>
+<td align="right">44694.07</td>
+<td align="right">2.00e+07</td>
+<td align="right">2.01e+07</td>
+<td align="right">2.01e+07</td>
+<td align="right">2.01e+07</td>
+<td align="right">2.02e+07</td>
+<td align="left">▁▇▁▆▃</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2.01e+03</td>
+<td align="right">4.48</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▇▁▆▃</td>
+</tr>
+<tr class="odd">
+<td align="left">price</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2.14e+03</td>
+<td align="right">1427.75</td>
+<td align="right">2.20e+02</td>
+<td align="right">1.30e+03</td>
+<td align="right">1.80e+03</td>
+<td align="right">2.50e+03</td>
+<td align="right">4.00e+04</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">beds</td>
+<td align="right">6608</td>
+<td align="right">0.97</td>
+<td align="right">1.89e+00</td>
+<td align="right">1.08</td>
+<td align="right">0.00e+00</td>
+<td align="right">1.00e+00</td>
+<td align="right">2.00e+00</td>
+<td align="right">3.00e+00</td>
+<td align="right">1.20e+01</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">baths</td>
+<td align="right">158121</td>
+<td align="right">0.21</td>
+<td align="right">1.68e+00</td>
+<td align="right">0.69</td>
+<td align="right">1.00e+00</td>
+<td align="right">1.00e+00</td>
+<td align="right">2.00e+00</td>
+<td align="right">2.00e+00</td>
+<td align="right">8.00e+00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">sqft</td>
+<td align="right">136117</td>
+<td align="right">0.32</td>
+<td align="right">1.20e+03</td>
+<td align="right">5000.22</td>
+<td align="right">8.00e+01</td>
+<td align="right">7.50e+02</td>
+<td align="right">1.00e+03</td>
+<td align="right">1.36e+03</td>
+<td align="right">9.00e+05</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">room_in_apt</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.00e+00</td>
+<td align="right">0.04</td>
+<td align="right">0.00e+00</td>
+<td align="right">0.00e+00</td>
+<td align="right">0.00e+00</td>
+<td align="right">0.00e+00</td>
+<td align="right">1.00e+00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">lat</td>
+<td align="right">193145</td>
+<td align="right">0.04</td>
+<td align="right">3.77e+01</td>
+<td align="right">0.35</td>
+<td align="right">3.36e+01</td>
+<td align="right">3.74e+01</td>
+<td align="right">3.78e+01</td>
+<td align="right">3.78e+01</td>
+<td align="right">4.04e+01</td>
+<td align="left">▁▁▅▇▁</td>
+</tr>
+<tr class="odd">
+<td align="left">lon</td>
+<td align="right">196484</td>
+<td align="right">0.02</td>
+<td align="right">-1.22e+02</td>
+<td align="right">0.78</td>
+<td align="right">-1.23e+02</td>
+<td align="right">-1.22e+02</td>
+<td align="right">-1.22e+02</td>
+<td align="right">-1.22e+02</td>
+<td align="right">-7.42e+01</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>spec(rent)</code></pre>
+<pre><code>## cols(
+##   post_id = col_character(),
+##   date = col_double(),
+##   year = col_double(),
+##   nhood = col_character(),
+##   city = col_character(),
+##   county = col_character(),
+##   price = col_double(),
+##   beds = col_double(),
+##   baths = col_double(),
+##   sqft = col_double(),
+##   room_in_apt = col_double(),
+##   address = col_character(),
+##   lat = col_double(),
+##   lon = col_double(),
+##   title = col_character(),
+##   descr = col_character(),
+##   details = col_character()
+## )</code></pre>
+<pre class="r"><code>unique(rent$city)</code></pre>
+<pre><code>##   [1] &quot;alameda&quot;             &quot;san francisco&quot;       &quot;el cerrito&quot;         
+##   [4] &quot;san jose&quot;            &quot;american canyon&quot;     &quot;atherton&quot;           
+##   [7] &quot;belmont&quot;             &quot;ben lomond&quot;          &quot;berkeley&quot;           
+##  [10] &quot;boulder cr&quot;          &quot;brentwood&quot;           &quot;brisbane&quot;           
+##  [13] &quot;brookdale&quot;           &quot;burlingame&quot;          &quot;calistoga&quot;          
+##  [16] &quot;campbell&quot;            &quot;soquel&quot;              &quot;cazadero&quot;           
+##  [19] &quot;clayton&quot;             &quot;cloverdale&quot;          &quot;pescadero&quot;          
+##  [22] &quot;colma&quot;               &quot;concord&quot;             &quot;corralitos&quot;         
+##  [25] &quot;corte madera&quot;        &quot;crockett&quot;            &quot;cupertino&quot;          
+##  [28] &quot;daly city&quot;           &quot;san ramon&quot;           &quot;dillon beach&quot;       
+##  [31] &quot;winters&quot;             &quot;dublin&quot;              &quot;east bay&quot;           
+##  [34] &quot;emeryville&quot;          &quot;fairfax&quot;             &quot;fairfield&quot;          
+##  [37] &quot;felton&quot;              &quot;forest knolls&quot;       &quot;foster city&quot;        
+##  [40] &quot;geyserville&quot;         &quot;gilroy&quot;              &quot;cordelia&quot;           
+##  [43] &quot;greenbrae&quot;           &quot;guerneville&quot;         &quot;half moon bay&quot;      
+##  [46] &quot;hayward&quot;             &quot;healdsburg&quot;          &quot;el sobrante&quot;        
+##  [49] &quot;inverness&quot;           &quot;kentfield&quot;           &quot;orinda&quot;             
+##  [52] &quot;woodacre&quot;            &quot;larkspur&quot;            &quot;livermore&quot;          
+##  [55] &quot;los altos&quot;           &quot;los gatos&quot;           &quot;marin&quot;              
+##  [58] &quot;menlo park&quot;          &quot;mill valley&quot;         &quot;millbrae&quot;           
+##  [61] &quot;milpitas&quot;            &quot;montara&quot;             &quot;morgan hill&quot;        
+##  [64] &quot;mountain view&quot;       &quot;napa county&quot;         &quot;north bay&quot;          
+##  [67] &quot;novato&quot;              &quot;oakland&quot;             &quot;pacifica&quot;           
+##  [70] &quot;palo alto&quot;           &quot;peninsula&quot;           &quot;petaluma&quot;           
+##  [73] &quot;pittsburg&quot;           &quot;redwood city&quot;        &quot;redwood shores&quot;     
+##  [76] &quot;richmond&quot;            &quot;rio vista&quot;           &quot;rohnert park&quot;       
+##  [79] &quot;russian river&quot;       &quot;san anselmo&quot;         &quot;san bruno&quot;          
+##  [82] &quot;san leandro&quot;         &quot;san mateo&quot;           &quot;san rafael&quot;         
+##  [85] &quot;santa clara&quot;         &quot;santa cruz&quot;          &quot;santa rosa&quot;         
+##  [88] &quot;saratoga&quot;            &quot;sausalito&quot;           &quot;scotts valley&quot;      
+##  [91] &quot;sebastopol&quot;          &quot;sf bay area&quot;         &quot;sonoma&quot;             
+##  [94] &quot;south bay&quot;           &quot;south san francisco&quot; &quot;sunnyvale&quot;          
+##  [97] &quot;belvedere&quot;           &quot;union city&quot;          &quot;vallejo&quot;            
+## [100] &quot;walnut creek&quot;        &quot;watsonville&quot;         &quot;cambrian&quot;           
+## [103] &quot;woodside&quot;            &quot;yountville&quot;</code></pre>
+<p>Make a plot that shows the top 20 cities in terms of % of classifieds between 2000-2018. You need to calculate the number of listings by city, and then convert that number to a %.</p>
+<pre class="r"><code>rent %&gt;%
+  count(city, sort=TRUE) %&gt;% 
+  mutate(prop = n/sum(n)) %&gt;% 
+  slice_max(n= 20, order_by= prop) %&gt;% 
+  mutate(city = fct_reorder(city,prop)) %&gt;% 
+  ggplot(aes(x= prop, y= city))+
+  geom_col()+
+  theme_minimal(base_size = 18)+
+  scale_x_continuous(labels = scales::percent)+labs (x = &#39;prop&#39;, y = &#39;city&#39;, caption = &quot;Source: Kate(2018). Bay Area Craiglist Rental Housing Posts, 2000 - 2018&quot;)</code></pre>
+<p><img src="/blogs/HW1_files/figure-html/top_cities-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Make a plot that shows the evolution of median prices in San Francisco for 0, 1, 2, and 3 bedrooms listings.</p>
+<pre class="r"><code>rent_sf&lt;- rent %&gt;%
+          filter(city ==&quot;san francisco&quot;, beds &lt;= 3) %&gt;%
+          group_by(year, beds) %&gt;%
+          summarise(med_rn = median(price))
+ 
+ggplot(rent_sf, aes(x=year, y=med_rn, color= factor(beds)))+geom_line()+facet_grid(~beds)</code></pre>
+<p><img src="/blogs/HW1_files/figure-html/unnamed-chunk-2-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>filtered_beds_0_2018 &lt;- rent %&gt;% group_by(beds,year) %&gt;% filter(city ==&#39;san francisco&#39;,beds == 0, year ==2018) 
+head(filtered_beds_0_2018)</code></pre>
+<pre><code>## # A tibble: 6 x 17
+## # Groups:   beds, year [1]
+##   post_id        date  year nhood   city  county price  beds baths  sqft room_~1
+##   &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1 6580981486 20180510  2018 castro  san ~ san f~  2250     0    NA    NA       0
+## 2 6480252497 20180201  2018 CCSF    san ~ san f~  1800     0     1    NA       0
+## 3 6584911622 20180510  2018 CCSF    san ~ san f~   900     0     1   150       0
+## 4 6503872328 20180220  2018 civic ~ san ~ san f~   755     0    NA    NA       0
+## 5 6499200906 20180301  2018 civic ~ san ~ san f~  1975     0    NA   300       0
+## 6 6488645253 20180208  2018 civic ~ san ~ san f~  2395     0    NA   450       0
+## # ... with 6 more variables: address &lt;chr&gt;, lat &lt;dbl&gt;, lon &lt;dbl&gt;, title &lt;chr&gt;,
+## #   descr &lt;chr&gt;, details &lt;chr&gt;, and abbreviated variable name 1: room_in_apt</code></pre>
+<p>Finally, make a plot that shows median rental prices for the top 2 cities in the Bay area. Your final graph should look like this</p>
+<pre class="r"><code>top_twelve_data &lt;- rent %&gt;%
+  count(city) %&gt;% #to count number of classifieds in each city
+  arrange(desc(n)) %&gt;%
+  slice(1:12) 
+top_twelve_cities &lt;- as.vector(top_twelve_data$city)
+top_twelve_cities</code></pre>
+<pre><code>##  [1] &quot;san francisco&quot; &quot;san jose&quot;      &quot;oakland&quot;       &quot;santa rosa&quot;   
+##  [5] &quot;santa cruz&quot;    &quot;san mateo&quot;     &quot;sunnyvale&quot;     &quot;mountain view&quot;
+##  [9] &quot;berkeley&quot;      &quot;santa clara&quot;   &quot;palo alto&quot;     &quot;union city&quot;</code></pre>
+<pre class="r"><code>rent %&gt;%
+  filter(city %in% top_twelve_cities) %&gt;%
+  group_by(year, city) %&gt;%
+  summarize(median_price = median(price)) %&gt;%
+ggplot(aes(year, median_price, color = factor(city))) +
+  geom_line() +
+  facet_wrap(vars(city)) +
+  labs(
+  title = &quot;Rental prices for 1-bedroom flats in the Bay Area&quot;,
+  x = NULL,
+  y = NULL,
+  caption = &quot;Source: Pennington. Kate (2018). Bay Area Craigslist Rental Housing Posts 2000-2018&quot;) +
+  theme(legend.position = &quot;None&quot;)</code></pre>
+<p><img src="/blogs/HW1_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>The data set shows us that San Francisco has the maximum percentage listings, precisely 4x listings more than San Jose, the second highest listings city. This is valid since most listing are in the densely populated area of San Francisco rather than in the suburbs in the vicinity. Moreover, its vicinity to Silicon Valley makes it a hub for residences.</p>
+<p>In San Francisco, the median prices see a major rise across all the types of bedroom (0-3 bedroom flats) across a 20 year period. The drop in rents from 2002 to 2006 was a result of the housing bubble that caused the demand to decrease and rent prices to plummet down. This bubble burst in 2008, post which we see a massive rise in rents (~90% rise in rent from 2010 to 2015). This similar trend was experienced across all the cities in the Bay Area, with a decline from 2002 to 2006, and a multifold rise in the years after that.</p>
+</div>
+<div id="analysis-of-movies--imdb-dataset" class="section level1">
+<h1>Analysis of movies- IMDB dataset</h1>
+<pre class="r"><code>movies &lt;- read.csv(here::here(&quot;data&quot;, &quot;movies.csv&quot;))</code></pre>
+<div id="use-your-data-import-inspection-and-cleaning-skills-to-answer-the-following" class="section level2">
+<h2>Use your data import, inspection, and cleaning skills to answer the following:</h2>
+<ul>
+<li>Are there any missing values (NAs)? Are all entries distinct or are there duplicate entries?</li>
+</ul>
+<pre class="r"><code>count_NA &lt;- sum(is.na(movies)) #counting all the NAs
+count_NA
+duplicated_count &lt;- sum(duplicated(movies)) #counting all the duplicated
+duplicated_count</code></pre>
+<p>There are no missing values and duplicated values, if we use skim(movies) to check.</p>
+<ul>
+<li>Produce a table with the count of movies by genre, ranked in descending order. We can see that Comedy has the most movies listed, followed by Action. Whereas Thriller only has one movie listed.</li>
+</ul>
+<pre class="r"><code>movies &lt;- read.csv(here::here(&quot;data&quot;, &quot;movies.csv&quot;))
+movie_table&lt;- movies %&gt;%group_by(genre) %&gt;% count(genre) #grouping by genre, then counting.
+arrange(movie_table, desc(n))</code></pre>
+<pre><code>## # A tibble: 17 x 2
+## # Groups:   genre [17]
+##    genre           n
+##    &lt;chr&gt;       &lt;int&gt;
+##  1 Comedy        848
+##  2 Action        738
+##  3 Drama         498
+##  4 Adventure     288
+##  5 Crime         202
+##  6 Biography     135
+##  7 Horror        131
+##  8 Animation      35
+##  9 Fantasy        28
+## 10 Documentary    25
+## 11 Mystery        16
+## 12 Sci-Fi          7
+## 13 Family          3
+## 14 Musical         2
+## 15 Romance         2
+## 16 Western         2
+## 17 Thriller        1</code></pre>
+<ul>
+<li>Produce a table with the average gross earning and budget (<code>gross</code> and <code>budget</code>) by genre. Calculate a variable <code>return_on_budget</code> which shows how many $ did a movie make at the box office for each $ of its budget. Ranked genres by this <code>return_on_budget</code> in descending order.</li>
+</ul>
+<p>We can see that Musical has the highest return on budget at 28.9, followed by Family which had a return on budget at 10.1. Whereas Thriller has the least return on budget at 0.0008.</p>
+<pre class="r"><code>movies %&gt;% 
+  group_by(genre) %&gt;% 
+  summarize(return_on_budget = (mean(gross)/mean(budget))) %&gt;%  #creating a new column called return_on _budget
+  arrange(desc(return_on_budget))</code></pre>
+<pre><code>## # A tibble: 17 x 2
+##    genre       return_on_budget
+##    &lt;chr&gt;                  &lt;dbl&gt;
+##  1 Musical             28.9    
+##  2 Family              10.1    
+##  3 Western              6.01   
+##  4 Documentary          2.95   
+##  5 Horror               2.79   
+##  6 Fantasy              2.41   
+##  7 Comedy               1.74   
+##  8 Mystery              1.72   
+##  9 Animation            1.60   
+## 10 Biography            1.58   
+## 11 Adventure            1.45   
+## 12 Drama                1.43   
+## 13 Crime                1.41   
+## 14 Romance              1.25   
+## 15 Action               1.21   
+## 16 Sci-Fi               1.08   
+## 17 Thriller             0.00823</code></pre>
+<ul>
+<li>Produce a table that shows the top 15 directors who have created the highest gross revenue in the box office.</li>
+</ul>
+<p>We can see that Steven Spielberg had a highest sum of gross revenue.</p>
+<pre class="r"><code>movies %&gt;% group_by(director) %&gt;% summarize(sum = sum(gross),mean = mean(gross), median = median(gross), std = sd(gross)) %&gt;%  arrange(desc(sum)) %&gt;% slice_head(n = 15)</code></pre>
+<pre><code>## # A tibble: 15 x 5
+##    director                 sum       mean     median        std
+##    &lt;chr&gt;                  &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+##  1 Steven Spielberg  4014061704 174524422. 164435221  101421051.
+##  2 Michael Bay       2231242537 171634041. 138396624  127161579.
+##  3 Tim Burton        2071275480 129454718.  76519172  108726924.
+##  4 Sam Raimi         2014600898 201460090. 234903076  162126632.
+##  5 James Cameron     1909725910 318287652. 175562880. 309171337.
+##  6 Christopher Nolan 1813227576 226653447  196667606. 187224133.
+##  7 George Lucas      1741418480 348283696  380262555  146193880.
+##  8 Robert Zemeckis   1619309108 124562239. 100853835   91300279.
+##  9 Clint Eastwood    1378321100  72543216.  46700000   75487408.
+## 10 Francis Lawrence  1358501971 271700394. 281666058  135437020.
+## 11 Ron Howard        1335988092 111332341  101587923   81933761.
+## 12 Gore Verbinski    1329600995 189942999. 123207194  154473822.
+## 13 Andrew Adamson    1137446920 284361730  279680930. 120895765.
+## 14 Shawn Levy        1129750988 102704635.  85463309   65484773.
+## 15 Ridley Scott      1128857598  80632686.  47775715   68812285.</code></pre>
+<ul>
+<li>Finally, ratings. Produce a table that describes how ratings are distributed by genre. We don’t want just the mean, but also, min, max, median, SD and some kind of a histogram or density graph that visually shows how ratings are distributed.</li>
+</ul>
+<pre class="r"><code> movies %&gt;% 
+  group_by(genre) %&gt;% 
+  skim()</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-7">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">2961</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">11</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">genre</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="left">genre</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">title</td>
+<td align="left">Action</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">55</td>
+<td align="right">0</td>
+<td align="right">719</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">title</td>
+<td align="left">Adventure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">62</td>
+<td align="right">0</td>
+<td align="right">281</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">title</td>
+<td align="left">Animation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">39</td>
+<td align="right">0</td>
+<td align="right">35</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">title</td>
+<td align="left">Biography</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">58</td>
+<td align="right">0</td>
+<td align="right">135</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">title</td>
+<td align="left">Comedy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">83</td>
+<td align="right">0</td>
+<td align="right">844</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">title</td>
+<td align="left">Crime</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">40</td>
+<td align="right">0</td>
+<td align="right">198</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">title</td>
+<td align="left">Documentary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">41</td>
+<td align="right">0</td>
+<td align="right">25</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">title</td>
+<td align="left">Drama</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">50</td>
+<td align="right">0</td>
+<td align="right">484</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">title</td>
+<td align="left">Family</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">14</td>
+<td align="right">26</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">title</td>
+<td align="left">Fantasy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">45</td>
+<td align="right">0</td>
+<td align="right">26</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">title</td>
+<td align="left">Horror</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">42</td>
+<td align="right">0</td>
+<td align="right">128</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">title</td>
+<td align="left">Musical</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">title</td>
+<td align="left">Mystery</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">17</td>
+<td align="right">0</td>
+<td align="right">15</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">title</td>
+<td align="left">Romance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">16</td>
+<td align="right">21</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">title</td>
+<td align="left">Sci-Fi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">26</td>
+<td align="right">0</td>
+<td align="right">7</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">title</td>
+<td align="left">Thriller</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">title</td>
+<td align="left">Western</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="right">23</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">director</td>
+<td align="left">Action</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">32</td>
+<td align="right">0</td>
+<td align="right">424</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">director</td>
+<td align="left">Adventure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">25</td>
+<td align="right">0</td>
+<td align="right">215</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">director</td>
+<td align="left">Animation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">18</td>
+<td align="right">0</td>
+<td align="right">31</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">director</td>
+<td align="left">Biography</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">20</td>
+<td align="right">0</td>
+<td align="right">112</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">director</td>
+<td align="left">Comedy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">25</td>
+<td align="right">0</td>
+<td align="right">510</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">director</td>
+<td align="left">Crime</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">20</td>
+<td align="right">0</td>
+<td align="right">151</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">director</td>
+<td align="left">Documentary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">18</td>
+<td align="right">0</td>
+<td align="right">23</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">director</td>
+<td align="left">Drama</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">26</td>
+<td align="right">0</td>
+<td align="right">350</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">director</td>
+<td align="left">Family</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">13</td>
+<td align="right">16</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">director</td>
+<td align="left">Fantasy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">20</td>
+<td align="right">0</td>
+<td align="right">24</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">director</td>
+<td align="left">Horror</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">24</td>
+<td align="right">0</td>
+<td align="right">97</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">director</td>
+<td align="left">Musical</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">14</td>
+<td align="right">14</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">director</td>
+<td align="left">Mystery</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">18</td>
+<td align="right">0</td>
+<td align="right">14</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">director</td>
+<td align="left">Romance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="right">12</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">director</td>
+<td align="left">Sci-Fi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">7</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">director</td>
+<td align="left">Thriller</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">12</td>
+<td align="right">12</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">director</td>
+<td align="left">Western</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="right">14</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col width="16%" />
+<col width="9%" />
+<col width="8%" />
+<col width="11%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="4%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="left">genre</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">year</td>
+<td align="left">Action</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">8.73e+00</td>
+<td align="right">1.96e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▁▂▇▇</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="left">Adventure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">1.10e+01</td>
+<td align="right">1.94e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▁▁▃▇</td>
+</tr>
+<tr class="odd">
+<td align="left">year</td>
+<td align="left">Animation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">1.67e+01</td>
+<td align="right">1.94e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▁▁▂▇</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="left">Biography</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">1.09e+01</td>
+<td align="right">1.95e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▁▁▃▇</td>
+</tr>
+<tr class="odd">
+<td align="left">year</td>
+<td align="left">Comedy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">8.85e+00</td>
+<td align="right">1.93e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▁▁▃▇</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="left">Crime</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">1.17e+01</td>
+<td align="right">1.92e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▁▁▂▇</td>
+</tr>
+<tr class="odd">
+<td align="left">year</td>
+<td align="left">Documentary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.01e+03</td>
+<td align="right">9.38e+00</td>
+<td align="right">1.97e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="left">▁▁▁▂▇</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="left">Drama</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">9.76e+00</td>
+<td align="right">1.94e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▁▁▃▇</td>
+</tr>
+<tr class="odd">
+<td align="left">year</td>
+<td align="left">Family</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.99e+03</td>
+<td align="right">1.10e+01</td>
+<td align="right">1.98e+03</td>
+<td align="right">1.99e+03</td>
+<td align="right">1.99e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.00e+03</td>
+<td align="left">▇▁▇▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="left">Fantasy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">1.17e+01</td>
+<td align="right">1.98e+03</td>
+<td align="right">1.99e+03</td>
+<td align="right">1.99e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="left">▅▇▂▁▆</td>
+</tr>
+<tr class="odd">
+<td align="left">year</td>
+<td align="left">Horror</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">1.13e+01</td>
+<td align="right">1.96e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▁▂▅▇</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="left">Musical</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.95e+03</td>
+<td align="right">3.46e+01</td>
+<td align="right">1.93e+03</td>
+<td align="right">1.94e+03</td>
+<td align="right">1.95e+03</td>
+<td align="right">1.97e+03</td>
+<td align="right">1.98e+03</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">year</td>
+<td align="left">Mystery</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.01e+03</td>
+<td align="right">8.48e+00</td>
+<td align="right">1.98e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▁▂▅▇</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="left">Romance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.01e+03</td>
+<td align="right">1.41e+00</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">year</td>
+<td align="left">Sci-Fi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">1.27e+01</td>
+<td align="right">1.98e+03</td>
+<td align="right">1.99e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▅▁▂▇▂</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="left">Thriller</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.01e+03</td>
+<td align="right">NA</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.01e+03</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">year</td>
+<td align="left">Western</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">1.56e+01</td>
+<td align="right">1.98e+03</td>
+<td align="right">1.99e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">duration</td>
+<td align="left">Action</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.13e+02</td>
+<td align="right">2.01e+01</td>
+<td align="right">7.90e+01</td>
+<td align="right">1.00e+02</td>
+<td align="right">1.10e+02</td>
+<td align="right">1.24e+02</td>
+<td align="right">2.15e+02</td>
+<td align="left">▇▇▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">Adventure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.06e+02</td>
+<td align="right">2.64e+01</td>
+<td align="right">6.30e+01</td>
+<td align="right">9.00e+01</td>
+<td align="right">1.00e+02</td>
+<td align="right">1.15e+02</td>
+<td align="right">3.25e+02</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">duration</td>
+<td align="left">Animation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.81e+01</td>
+<td align="right">1.03e+01</td>
+<td align="right">6.80e+01</td>
+<td align="right">8.05e+01</td>
+<td align="right">8.80e+01</td>
+<td align="right">9.40e+01</td>
+<td align="right">1.11e+02</td>
+<td align="left">▃▅▇▃▂</td>
+</tr>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">Biography</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.28e+02</td>
+<td align="right">2.72e+01</td>
+<td align="right">8.50e+01</td>
+<td align="right">1.08e+02</td>
+<td align="right">1.23e+02</td>
+<td align="right">1.35e+02</td>
+<td align="right">2.40e+02</td>
+<td align="left">▆▇▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">duration</td>
+<td align="left">Comedy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.02e+02</td>
+<td align="right">1.30e+01</td>
+<td align="right">3.70e+01</td>
+<td align="right">9.30e+01</td>
+<td align="right">1.00e+02</td>
+<td align="right">1.09e+02</td>
+<td align="right">1.53e+02</td>
+<td align="left">▁▁▇▃▁</td>
+</tr>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">Crime</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.17e+02</td>
+<td align="right">2.78e+01</td>
+<td align="right">5.30e+01</td>
+<td align="right">1.01e+02</td>
+<td align="right">1.14e+02</td>
+<td align="right">1.25e+02</td>
+<td align="right">3.30e+02</td>
+<td align="left">▆▇▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">duration</td>
+<td align="left">Documentary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.05e+02</td>
+<td align="right">2.96e+01</td>
+<td align="right">8.00e+01</td>
+<td align="right">9.00e+01</td>
+<td align="right">9.30e+01</td>
+<td align="right">1.11e+02</td>
+<td align="right">2.15e+02</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">Drama</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.17e+02</td>
+<td align="right">2.49e+01</td>
+<td align="right">7.60e+01</td>
+<td align="right">1.02e+02</td>
+<td align="right">1.12e+02</td>
+<td align="right">1.28e+02</td>
+<td align="right">2.89e+02</td>
+<td align="left">▇▅▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">duration</td>
+<td align="left">Family</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.05e+02</td>
+<td align="right">1.41e+01</td>
+<td align="right">9.20e+01</td>
+<td align="right">9.75e+01</td>
+<td align="right">1.03e+02</td>
+<td align="right">1.12e+02</td>
+<td align="right">1.20e+02</td>
+<td align="left">▇▇▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">Fantasy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.04e+02</td>
+<td align="right">1.77e+01</td>
+<td align="right">7.20e+01</td>
+<td align="right">9.05e+01</td>
+<td align="right">1.00e+02</td>
+<td align="right">1.08e+02</td>
+<td align="right">1.55e+02</td>
+<td align="left">▂▇▃▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">duration</td>
+<td align="left">Horror</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.80e+01</td>
+<td align="right">1.23e+01</td>
+<td align="right">7.50e+01</td>
+<td align="right">9.00e+01</td>
+<td align="right">9.60e+01</td>
+<td align="right">1.03e+02</td>
+<td align="right">1.50e+02</td>
+<td align="left">▃▇▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">Musical</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.05e+02</td>
+<td align="right">7.07e+00</td>
+<td align="right">1.00e+02</td>
+<td align="right">1.02e+02</td>
+<td align="right">1.05e+02</td>
+<td align="right">1.08e+02</td>
+<td align="right">1.10e+02</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">duration</td>
+<td align="left">Mystery</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.10e+02</td>
+<td align="right">2.38e+01</td>
+<td align="right">8.50e+01</td>
+<td align="right">9.52e+01</td>
+<td align="right">1.01e+02</td>
+<td align="right">1.12e+02</td>
+<td align="right">1.74e+02</td>
+<td align="left">▇▅▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">Romance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.70e+01</td>
+<td align="right">1.27e+01</td>
+<td align="right">8.80e+01</td>
+<td align="right">9.25e+01</td>
+<td align="right">9.70e+01</td>
+<td align="right">1.02e+02</td>
+<td align="right">1.06e+02</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">duration</td>
+<td align="left">Sci-Fi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.04e+02</td>
+<td align="right">1.44e+01</td>
+<td align="right">8.10e+01</td>
+<td align="right">9.50e+01</td>
+<td align="right">1.06e+02</td>
+<td align="right">1.16e+02</td>
+<td align="right">1.20e+02</td>
+<td align="left">▂▂▂▂▇</td>
+</tr>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">Thriller</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.50e+01</td>
+<td align="right">NA</td>
+<td align="right">9.50e+01</td>
+<td align="right">9.50e+01</td>
+<td align="right">9.50e+01</td>
+<td align="right">9.50e+01</td>
+<td align="right">9.50e+01</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">duration</td>
+<td align="left">Western</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.65e+01</td>
+<td align="right">2.62e+01</td>
+<td align="right">7.80e+01</td>
+<td align="right">8.72e+01</td>
+<td align="right">9.65e+01</td>
+<td align="right">1.06e+02</td>
+<td align="right">1.15e+02</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">gross</td>
+<td align="left">Action</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.66e+07</td>
+<td align="right">9.48e+07</td>
+<td align="right">1.30e+04</td>
+<td align="right">2.54e+07</td>
+<td align="right">5.49e+07</td>
+<td align="right">1.15e+08</td>
+<td align="right">7.61e+08</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">gross</td>
+<td align="left">Adventure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.58e+07</td>
+<td align="right">9.67e+07</td>
+<td align="right">1.49e+04</td>
+<td align="right">2.55e+07</td>
+<td align="right">6.22e+07</td>
+<td align="right">1.33e+08</td>
+<td align="right">4.36e+08</td>
+<td align="left">▇▂▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">gross</td>
+<td align="left">Animation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.84e+07</td>
+<td align="right">8.62e+07</td>
+<td align="right">2.03e+05</td>
+<td align="right">3.60e+07</td>
+<td align="right">7.53e+07</td>
+<td align="right">1.43e+08</td>
+<td align="right">3.68e+08</td>
+<td align="left">▇▅▃▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">gross</td>
+<td align="left">Biography</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.52e+07</td>
+<td align="right">4.92e+07</td>
+<td align="right">1.28e+04</td>
+<td align="right">5.94e+06</td>
+<td align="right">3.05e+07</td>
+<td align="right">6.35e+07</td>
+<td align="right">2.56e+08</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">gross</td>
+<td align="left">Comedy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.26e+07</td>
+<td align="right">4.81e+07</td>
+<td align="right">7.03e+02</td>
+<td align="right">7.55e+06</td>
+<td align="right">2.57e+07</td>
+<td align="right">6.03e+07</td>
+<td align="right">3.30e+08</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">gross</td>
+<td align="left">Crime</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.75e+07</td>
+<td align="right">3.83e+07</td>
+<td align="right">1.11e+03</td>
+<td align="right">6.54e+06</td>
+<td align="right">2.75e+07</td>
+<td align="right">5.48e+07</td>
+<td align="right">1.83e+08</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">gross</td>
+<td align="left">Documentary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.74e+07</td>
+<td align="right">2.94e+07</td>
+<td align="right">8.52e+04</td>
+<td align="right">4.26e+05</td>
+<td align="right">3.71e+06</td>
+<td align="right">2.45e+07</td>
+<td align="right">1.19e+08</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">gross</td>
+<td align="left">Drama</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.75e+07</td>
+<td align="right">5.13e+07</td>
+<td align="right">2.58e+03</td>
+<td align="right">5.74e+06</td>
+<td align="right">2.29e+07</td>
+<td align="right">5.08e+07</td>
+<td align="right">6.59e+08</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">gross</td>
+<td align="left">Family</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.49e+08</td>
+<td align="right">2.48e+08</td>
+<td align="right">2.12e+06</td>
+<td align="right">6.27e+06</td>
+<td align="right">1.04e+07</td>
+<td align="right">2.23e+08</td>
+<td align="right">4.35e+08</td>
+<td align="left">▇▁▁▁▃</td>
+</tr>
+<tr class="even">
+<td align="left">gross</td>
+<td align="left">Fantasy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.24e+07</td>
+<td align="right">2.70e+07</td>
+<td align="right">1.71e+06</td>
+<td align="right">2.20e+07</td>
+<td align="right">3.28e+07</td>
+<td align="right">5.66e+07</td>
+<td align="right">1.01e+08</td>
+<td align="left">▆▇▅▂▃</td>
+</tr>
+<tr class="odd">
+<td align="left">gross</td>
+<td align="left">Horror</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.77e+07</td>
+<td align="right">3.15e+07</td>
+<td align="right">7.75e+04</td>
+<td align="right">1.76e+07</td>
+<td align="right">3.14e+07</td>
+<td align="right">4.75e+07</td>
+<td align="right">2.05e+08</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">gross</td>
+<td align="left">Musical</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.21e+07</td>
+<td align="right">1.26e+08</td>
+<td align="right">2.81e+06</td>
+<td align="right">4.74e+07</td>
+<td align="right">9.21e+07</td>
+<td align="right">1.37e+08</td>
+<td align="right">1.81e+08</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">gross</td>
+<td align="left">Mystery</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.75e+07</td>
+<td align="right">5.48e+07</td>
+<td align="right">2.20e+07</td>
+<td align="right">3.43e+07</td>
+<td align="right">4.58e+07</td>
+<td align="right">7.51e+07</td>
+<td align="right">2.18e+08</td>
+<td align="left">▇▁▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">gross</td>
+<td align="left">Romance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.13e+07</td>
+<td align="right">4.41e+07</td>
+<td align="right">7.64e+04</td>
+<td align="right">1.57e+07</td>
+<td align="right">3.13e+07</td>
+<td align="right">4.69e+07</td>
+<td align="right">6.25e+07</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">gross</td>
+<td align="left">Sci-Fi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.98e+07</td>
+<td align="right">3.09e+07</td>
+<td align="right">1.82e+04</td>
+<td align="right">7.55e+06</td>
+<td align="right">2.23e+07</td>
+<td align="right">4.58e+07</td>
+<td align="right">7.96e+07</td>
+<td align="left">▇▅▁▁▅</td>
+</tr>
+<tr class="even">
+<td align="left">gross</td>
+<td align="left">Thriller</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.47e+03</td>
+<td align="right">NA</td>
+<td align="right">2.47e+03</td>
+<td align="right">2.47e+03</td>
+<td align="right">2.47e+03</td>
+<td align="right">2.47e+03</td>
+<td align="right">2.47e+03</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">gross</td>
+<td align="left">Western</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.08e+07</td>
+<td align="right">2.91e+07</td>
+<td align="right">2.44e+05</td>
+<td align="right">1.05e+07</td>
+<td align="right">2.08e+07</td>
+<td align="right">3.11e+07</td>
+<td align="right">4.14e+07</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">budget</td>
+<td align="left">Action</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.14e+07</td>
+<td align="right">5.54e+07</td>
+<td align="right">7.00e+03</td>
+<td align="right">3.00e+07</td>
+<td align="right">5.80e+07</td>
+<td align="right">1.00e+08</td>
+<td align="right">3.00e+08</td>
+<td align="left">▇▅▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">budget</td>
+<td align="left">Adventure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.63e+07</td>
+<td align="right">5.60e+07</td>
+<td align="right">2.10e+05</td>
+<td align="right">2.00e+07</td>
+<td align="right">5.00e+07</td>
+<td align="right">9.92e+07</td>
+<td align="right">2.60e+08</td>
+<td align="left">▇▃▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">budget</td>
+<td align="left">Animation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.17e+07</td>
+<td align="right">4.51e+07</td>
+<td align="right">2.50e+05</td>
+<td align="right">2.65e+07</td>
+<td align="right">6.90e+07</td>
+<td align="right">8.50e+07</td>
+<td align="right">2.00e+08</td>
+<td align="left">▇▅▅▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">budget</td>
+<td align="left">Biography</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.85e+07</td>
+<td align="right">2.36e+07</td>
+<td align="right">2.18e+02</td>
+<td align="right">1.05e+07</td>
+<td align="right">2.40e+07</td>
+<td align="right">3.95e+07</td>
+<td align="right">1.10e+08</td>
+<td align="left">▇▆▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">budget</td>
+<td align="left">Comedy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.44e+07</td>
+<td align="right">2.18e+07</td>
+<td align="right">1.00e+04</td>
+<td align="right">8.00e+06</td>
+<td align="right">1.90e+07</td>
+<td align="right">3.50e+07</td>
+<td align="right">1.75e+08</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">budget</td>
+<td align="left">Crime</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.66e+07</td>
+<td align="right">2.24e+07</td>
+<td align="right">1.00e+05</td>
+<td align="right">8.00e+06</td>
+<td align="right">2.20e+07</td>
+<td align="right">4.00e+07</td>
+<td align="right">1.10e+08</td>
+<td align="left">▇▃▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">budget</td>
+<td align="left">Documentary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.89e+06</td>
+<td align="right">1.20e+07</td>
+<td align="right">1.10e+03</td>
+<td align="right">5.00e+05</td>
+<td align="right">2.00e+06</td>
+<td align="right">8.00e+06</td>
+<td align="right">6.00e+07</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">budget</td>
+<td align="left">Drama</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.62e+07</td>
+<td align="right">2.57e+07</td>
+<td align="right">7.00e+03</td>
+<td align="right">7.00e+06</td>
+<td align="right">1.90e+07</td>
+<td align="right">3.60e+07</td>
+<td align="right">2.00e+08</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">budget</td>
+<td align="left">Family</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.48e+07</td>
+<td align="right">4.25e+06</td>
+<td align="right">1.05e+07</td>
+<td align="right">1.28e+07</td>
+<td align="right">1.50e+07</td>
+<td align="right">1.70e+07</td>
+<td align="right">1.90e+07</td>
+<td align="left">▇▁▇▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">budget</td>
+<td align="left">Fantasy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.76e+07</td>
+<td align="right">2.14e+07</td>
+<td align="right">1.00e+06</td>
+<td align="right">4.92e+06</td>
+<td align="right">8.75e+06</td>
+<td align="right">2.12e+07</td>
+<td align="right">8.00e+07</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">budget</td>
+<td align="left">Horror</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.35e+07</td>
+<td align="right">1.28e+07</td>
+<td align="right">1.50e+04</td>
+<td align="right">3.40e+06</td>
+<td align="right">1.00e+07</td>
+<td align="right">1.95e+07</td>
+<td align="right">6.50e+07</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">budget</td>
+<td align="left">Musical</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.19e+06</td>
+<td align="right">3.97e+06</td>
+<td align="right">3.79e+05</td>
+<td align="right">1.78e+06</td>
+<td align="right">3.19e+06</td>
+<td align="right">4.59e+06</td>
+<td align="right">6.00e+06</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">budget</td>
+<td align="left">Mystery</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.92e+07</td>
+<td align="right">4.36e+07</td>
+<td align="right">4.00e+06</td>
+<td align="right">8.38e+06</td>
+<td align="right">2.80e+07</td>
+<td align="right">4.25e+07</td>
+<td align="right">1.50e+08</td>
+<td align="left">▇▂▁▁▂</td>
+</tr>
+<tr class="odd">
+<td align="left">budget</td>
+<td align="left">Romance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.51e+07</td>
+<td align="right">3.55e+07</td>
+<td align="right">1.50e+04</td>
+<td align="right">1.26e+07</td>
+<td align="right">2.51e+07</td>
+<td align="right">3.77e+07</td>
+<td align="right">5.02e+07</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">budget</td>
+<td align="left">Sci-Fi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.76e+07</td>
+<td align="right">2.77e+07</td>
+<td align="right">2.50e+05</td>
+<td align="right">1.20e+07</td>
+<td align="right">1.30e+07</td>
+<td align="right">3.80e+07</td>
+<td align="right">8.00e+07</td>
+<td align="left">▇▂▂▁▂</td>
+</tr>
+<tr class="odd">
+<td align="left">budget</td>
+<td align="left">Thriller</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.00e+05</td>
+<td align="right">NA</td>
+<td align="right">3.00e+05</td>
+<td align="right">3.00e+05</td>
+<td align="right">3.00e+05</td>
+<td align="right">3.00e+05</td>
+<td align="right">3.00e+05</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">budget</td>
+<td align="left">Western</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.46e+06</td>
+<td align="right">4.86e+06</td>
+<td align="right">3.00e+04</td>
+<td align="right">1.75e+06</td>
+<td align="right">3.46e+06</td>
+<td align="right">5.18e+06</td>
+<td align="right">6.90e+06</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Action</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.46e+04</td>
+<td align="right">1.88e+04</td>
+<td align="right">2.00e+00</td>
+<td align="right">2.69e+03</td>
+<td align="right">8.53e+03</td>
+<td align="right">2.04e+04</td>
+<td align="right">2.64e+05</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Adventure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.39e+04</td>
+<td align="right">1.77e+04</td>
+<td align="right">4.90e+01</td>
+<td align="right">2.36e+03</td>
+<td align="right">4.96e+03</td>
+<td align="right">1.92e+04</td>
+<td align="right">8.14e+04</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Animation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.25e+04</td>
+<td align="right">1.81e+04</td>
+<td align="right">7.00e+00</td>
+<td align="right">1.20e+03</td>
+<td align="right">4.77e+03</td>
+<td align="right">1.35e+04</td>
+<td align="right">7.10e+04</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Biography</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.53e+04</td>
+<td align="right">1.80e+04</td>
+<td align="right">4.00e+00</td>
+<td align="right">2.03e+03</td>
+<td align="right">7.24e+03</td>
+<td align="right">2.21e+04</td>
+<td align="right">7.58e+04</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Comedy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.08e+04</td>
+<td align="right">2.56e+04</td>
+<td align="right">0.00e+00</td>
+<td align="right">2.40e+03</td>
+<td align="right">4.21e+03</td>
+<td align="right">1.40e+04</td>
+<td align="right">6.57e+05</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Crime</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.35e+04</td>
+<td align="right">1.44e+04</td>
+<td align="right">2.00e+00</td>
+<td align="right">2.56e+03</td>
+<td align="right">1.16e+04</td>
+<td align="right">1.96e+04</td>
+<td align="right">1.01e+05</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Documentary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.24e+02</td>
+<td align="right">1.04e+03</td>
+<td align="right">2.00e+00</td>
+<td align="right">6.60e+01</td>
+<td align="right">6.60e+02</td>
+<td align="right">1.11e+03</td>
+<td align="right">4.62e+03</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Drama</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.19e+04</td>
+<td align="right">1.47e+04</td>
+<td align="right">5.00e+00</td>
+<td align="right">1.97e+03</td>
+<td align="right">4.33e+03</td>
+<td align="right">1.73e+04</td>
+<td align="right">1.21e+05</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Family</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.50e+03</td>
+<td align="right">2.35e+03</td>
+<td align="right">2.00e+00</td>
+<td align="right">1.41e+03</td>
+<td align="right">2.81e+03</td>
+<td align="right">3.74e+03</td>
+<td align="right">4.68e+03</td>
+<td align="left">▇▁▁▇▇</td>
+</tr>
+<tr class="even">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Fantasy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.07e+03</td>
+<td align="right">1.16e+04</td>
+<td align="right">4.50e+02</td>
+<td align="right">2.11e+03</td>
+<td align="right">3.01e+03</td>
+<td align="right">6.35e+03</td>
+<td align="right">4.23e+04</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Horror</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.50e+03</td>
+<td align="right">3.00e+04</td>
+<td align="right">1.70e+02</td>
+<td align="right">1.29e+03</td>
+<td align="right">2.52e+03</td>
+<td align="right">4.42e+03</td>
+<td align="right">3.04e+05</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Musical</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.62e+03</td>
+<td align="right">3.55e+03</td>
+<td align="right">1.09e+02</td>
+<td align="right">1.36e+03</td>
+<td align="right">2.62e+03</td>
+<td align="right">3.87e+03</td>
+<td align="right">5.13e+03</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Mystery</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.21e+04</td>
+<td align="right">1.16e+04</td>
+<td align="right">1.09e+03</td>
+<td align="right">3.22e+03</td>
+<td align="right">7.87e+03</td>
+<td align="right">1.63e+04</td>
+<td align="right">4.13e+04</td>
+<td align="left">▇▅▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Romance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.08e+03</td>
+<td align="right">9.24e+03</td>
+<td align="right">1.55e+03</td>
+<td align="right">4.81e+03</td>
+<td align="right">8.08e+03</td>
+<td align="right">1.13e+04</td>
+<td align="right">1.46e+04</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Sci-Fi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.02e+03</td>
+<td align="right">6.14e+03</td>
+<td align="right">1.54e+02</td>
+<td align="right">2.07e+03</td>
+<td align="right">4.54e+03</td>
+<td align="right">1.32e+04</td>
+<td align="right">1.39e+04</td>
+<td align="left">▇▂▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Thriller</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.05e+03</td>
+<td align="right">NA</td>
+<td align="right">2.05e+03</td>
+<td align="right">2.05e+03</td>
+<td align="right">2.05e+03</td>
+<td align="right">2.05e+03</td>
+<td align="right">2.05e+03</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">cast_facebook_likes</td>
+<td align="left">Western</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.64e+03</td>
+<td align="right">1.21e+04</td>
+<td align="right">7.20e+01</td>
+<td align="right">4.36e+03</td>
+<td align="right">8.64e+03</td>
+<td align="right">1.29e+04</td>
+<td align="right">1.72e+04</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="left">Action</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.53e+05</td>
+<td align="right">1.89e+05</td>
+<td align="right">4.48e+02</td>
+<td align="right">4.03e+04</td>
+<td align="right">8.97e+04</td>
+<td align="right">1.94e+05</td>
+<td align="right">1.68e+06</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">votes</td>
+<td align="left">Adventure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.38e+05</td>
+<td align="right">1.67e+05</td>
+<td align="right">3.97e+02</td>
+<td align="right">2.42e+04</td>
+<td align="right">7.01e+04</td>
+<td align="right">1.84e+05</td>
+<td align="right">9.28e+05</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="left">Animation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.74e+04</td>
+<td align="right">1.06e+05</td>
+<td align="right">1.43e+03</td>
+<td align="right">2.09e+04</td>
+<td align="right">7.11e+04</td>
+<td align="right">1.38e+05</td>
+<td align="right">4.74e+05</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">votes</td>
+<td align="left">Biography</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.16e+05</td>
+<td align="right">1.64e+05</td>
+<td align="right">1.24e+03</td>
+<td align="right">1.69e+04</td>
+<td align="right">5.39e+04</td>
+<td align="right">1.36e+05</td>
+<td align="right">8.65e+05</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="left">Comedy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.83e+04</td>
+<td align="right">9.27e+04</td>
+<td align="right">9.10e+01</td>
+<td align="right">1.34e+04</td>
+<td align="right">3.77e+04</td>
+<td align="right">8.54e+04</td>
+<td align="right">1.25e+06</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">votes</td>
+<td align="left">Crime</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.49e+05</td>
+<td align="right">2.42e+05</td>
+<td align="right">5.00e+00</td>
+<td align="right">2.19e+04</td>
+<td align="right">5.98e+04</td>
+<td align="right">1.53e+05</td>
+<td align="right">1.69e+06</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="left">Documentary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.85e+04</td>
+<td align="right">2.74e+04</td>
+<td align="right">1.31e+02</td>
+<td align="right">1.14e+03</td>
+<td align="right">9.04e+03</td>
+<td align="right">2.22e+04</td>
+<td align="right">1.13e+05</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">votes</td>
+<td align="left">Drama</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.14e+04</td>
+<td align="right">1.43e+05</td>
+<td align="right">9.10e+01</td>
+<td align="right">1.30e+04</td>
+<td align="right">4.29e+04</td>
+<td align="right">1.02e+05</td>
+<td align="right">1.35e+06</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="left">Family</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.02e+05</td>
+<td align="right">1.56e+05</td>
+<td align="right">1.15e+03</td>
+<td align="right">1.19e+04</td>
+<td align="right">2.26e+04</td>
+<td align="right">1.52e+05</td>
+<td align="right">2.82e+05</td>
+<td align="left">▇▁▁▁▃</td>
+</tr>
+<tr class="odd">
+<td align="left">votes</td>
+<td align="left">Fantasy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.36e+04</td>
+<td align="right">8.50e+04</td>
+<td align="right">3.94e+03</td>
+<td align="right">3.17e+04</td>
+<td align="right">4.65e+04</td>
+<td align="right">1.06e+05</td>
+<td align="right">3.58e+05</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="left">Horror</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.60e+04</td>
+<td align="right">7.04e+04</td>
+<td align="right">3.27e+03</td>
+<td align="right">2.63e+04</td>
+<td align="right">5.44e+04</td>
+<td align="right">1.01e+05</td>
+<td align="right">4.22e+05</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">votes</td>
+<td align="left">Musical</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.73e+04</td>
+<td align="right">1.17e+05</td>
+<td align="right">4.55e+03</td>
+<td align="right">4.59e+04</td>
+<td align="right">8.73e+04</td>
+<td align="right">1.29e+05</td>
+<td align="right">1.70e+05</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="left">Mystery</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.33e+05</td>
+<td align="right">2.50e+05</td>
+<td align="right">2.40e+04</td>
+<td align="right">7.57e+04</td>
+<td align="right">1.56e+05</td>
+<td align="right">2.94e+05</td>
+<td align="right">8.46e+05</td>
+<td align="left">▇▂▁▁▂</td>
+</tr>
+<tr class="odd">
+<td align="left">votes</td>
+<td align="left">Romance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.01e+05</td>
+<td align="right">1.41e+05</td>
+<td align="right">1.19e+03</td>
+<td align="right">5.09e+04</td>
+<td align="right">1.01e+05</td>
+<td align="right">1.50e+05</td>
+<td align="right">2.00e+05</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="left">Sci-Fi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.68e+05</td>
+<td align="right">1.74e+05</td>
+<td align="right">3.36e+02</td>
+<td align="right">6.12e+04</td>
+<td align="right">7.18e+04</td>
+<td align="right">2.60e+05</td>
+<td align="right">4.62e+05</td>
+<td align="left">▇▂▁▂▂</td>
+</tr>
+<tr class="odd">
+<td align="left">votes</td>
+<td align="left">Thriller</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.41e+02</td>
+<td align="right">NA</td>
+<td align="right">2.41e+02</td>
+<td align="right">2.41e+02</td>
+<td align="right">2.41e+02</td>
+<td align="right">2.41e+02</td>
+<td align="right">2.41e+02</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="left">Western</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.98e+04</td>
+<td align="right">2.78e+04</td>
+<td align="right">1.43e+02</td>
+<td align="right">9.97e+03</td>
+<td align="right">1.98e+04</td>
+<td align="right">2.96e+04</td>
+<td align="right">3.95e+04</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">reviews</td>
+<td align="left">Action</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.70e+02</td>
+<td align="right">6.39e+02</td>
+<td align="right">7.00e+00</td>
+<td align="right">2.76e+02</td>
+<td align="right">4.70e+02</td>
+<td align="right">8.59e+02</td>
+<td align="right">5.31e+03</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">reviews</td>
+<td align="left">Adventure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.31e+02</td>
+<td align="right">5.08e+02</td>
+<td align="right">2.30e+01</td>
+<td align="right">1.98e+02</td>
+<td align="right">3.80e+02</td>
+<td align="right">6.91e+02</td>
+<td align="right">3.44e+03</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">reviews</td>
+<td align="left">Animation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.83e+02</td>
+<td align="right">2.52e+02</td>
+<td align="right">4.00e+01</td>
+<td align="right">2.25e+02</td>
+<td align="right">3.47e+02</td>
+<td align="right">5.30e+02</td>
+<td align="right">1.09e+03</td>
+<td align="left">▇▇▅▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">reviews</td>
+<td align="left">Biography</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.76e+02</td>
+<td align="right">3.46e+02</td>
+<td align="right">4.00e+01</td>
+<td align="right">2.02e+02</td>
+<td align="right">3.82e+02</td>
+<td align="right">6.76e+02</td>
+<td align="right">1.74e+03</td>
+<td align="left">▇▅▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">reviews</td>
+<td align="left">Comedy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.25e+02</td>
+<td align="right">2.42e+02</td>
+<td align="right">1.60e+01</td>
+<td align="right">1.55e+02</td>
+<td align="right">2.64e+02</td>
+<td align="right">4.27e+02</td>
+<td align="right">1.69e+03</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">reviews</td>
+<td align="left">Crime</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.54e+02</td>
+<td align="right">5.40e+02</td>
+<td align="right">2.00e+00</td>
+<td align="right">2.33e+02</td>
+<td align="right">4.08e+02</td>
+<td align="right">7.16e+02</td>
+<td align="right">4.34e+03</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">reviews</td>
+<td align="left">Documentary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.22e+02</td>
+<td align="right">3.40e+02</td>
+<td align="right">2.80e+01</td>
+<td align="right">5.80e+01</td>
+<td align="right">1.27e+02</td>
+<td align="right">2.29e+02</td>
+<td align="right">1.70e+03</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">reviews</td>
+<td align="left">Drama</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.96e+02</td>
+<td align="right">4.92e+02</td>
+<td align="right">6.00e+00</td>
+<td align="right">1.94e+02</td>
+<td align="right">3.46e+02</td>
+<td align="right">6.62e+02</td>
+<td align="right">3.28e+03</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">reviews</td>
+<td align="left">Family</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.38e+02</td>
+<td align="right">3.59e+02</td>
+<td align="right">2.50e+01</td>
+<td align="right">1.42e+02</td>
+<td align="right">2.58e+02</td>
+<td align="right">4.94e+02</td>
+<td align="right">7.30e+02</td>
+<td align="left">▇▇▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">reviews</td>
+<td align="left">Fantasy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.58e+02</td>
+<td align="right">3.63e+02</td>
+<td align="right">7.10e+01</td>
+<td align="right">3.45e+02</td>
+<td align="right">5.04e+02</td>
+<td align="right">6.08e+02</td>
+<td align="right">1.62e+03</td>
+<td align="left">▇▇▂▁▂</td>
+</tr>
+<tr class="odd">
+<td align="left">reviews</td>
+<td align="left">Horror</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.58e+02</td>
+<td align="right">4.46e+02</td>
+<td align="right">1.11e+02</td>
+<td align="right">4.06e+02</td>
+<td align="right">5.41e+02</td>
+<td align="right">7.86e+02</td>
+<td align="right">3.76e+03</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">reviews</td>
+<td align="left">Musical</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.90e+02</td>
+<td align="right">2.60e+02</td>
+<td align="right">1.07e+02</td>
+<td align="right">1.99e+02</td>
+<td align="right">2.90e+02</td>
+<td align="right">3.82e+02</td>
+<td align="right">4.74e+02</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">reviews</td>
+<td align="left">Mystery</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.43e+02</td>
+<td align="right">6.26e+02</td>
+<td align="right">2.80e+02</td>
+<td align="right">5.60e+02</td>
+<td align="right">7.30e+02</td>
+<td align="right">1.17e+03</td>
+<td align="right">2.34e+03</td>
+<td align="left">▇▆▂▁▂</td>
+</tr>
+<tr class="even">
+<td align="left">reviews</td>
+<td align="left">Romance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.25e+02</td>
+<td align="right">5.59e+02</td>
+<td align="right">3.00e+01</td>
+<td align="right">2.28e+02</td>
+<td align="right">4.25e+02</td>
+<td align="right">6.22e+02</td>
+<td align="right">8.20e+02</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">reviews</td>
+<td align="left">Sci-Fi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.79e+02</td>
+<td align="right">6.48e+02</td>
+<td align="right">1.50e+01</td>
+<td align="right">2.95e+02</td>
+<td align="right">5.05e+02</td>
+<td align="right">1.38e+03</td>
+<td align="right">1.59e+03</td>
+<td align="left">▅▅▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">reviews</td>
+<td align="left">Thriller</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.50e+01</td>
+<td align="right">NA</td>
+<td align="right">1.50e+01</td>
+<td align="right">1.50e+01</td>
+<td align="right">1.50e+01</td>
+<td align="right">1.50e+01</td>
+<td align="right">1.50e+01</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">reviews</td>
+<td align="left">Western</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.40e+01</td>
+<td align="right">1.16e+02</td>
+<td align="right">1.20e+01</td>
+<td align="right">5.30e+01</td>
+<td align="right">9.40e+01</td>
+<td align="right">1.35e+02</td>
+<td align="right">1.76e+02</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">rating</td>
+<td align="left">Action</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.23e+00</td>
+<td align="right">1.03e+00</td>
+<td align="right">2.10e+00</td>
+<td align="right">5.70e+00</td>
+<td align="right">6.30e+00</td>
+<td align="right">6.90e+00</td>
+<td align="right">9.00e+00</td>
+<td align="left">▁▂▇▇▁</td>
+</tr>
+<tr class="odd">
+<td align="left">rating</td>
+<td align="left">Adventure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.51e+00</td>
+<td align="right">1.09e+00</td>
+<td align="right">2.30e+00</td>
+<td align="right">5.90e+00</td>
+<td align="right">6.60e+00</td>
+<td align="right">7.30e+00</td>
+<td align="right">8.60e+00</td>
+<td align="left">▁▁▃▇▃</td>
+</tr>
+<tr class="even">
+<td align="left">rating</td>
+<td align="left">Animation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.65e+00</td>
+<td align="right">9.70e-01</td>
+<td align="right">4.50e+00</td>
+<td align="right">6.45e+00</td>
+<td align="right">6.90e+00</td>
+<td align="right">7.30e+00</td>
+<td align="right">8.00e+00</td>
+<td align="left">▃▁▃▇▅</td>
+</tr>
+<tr class="odd">
+<td align="left">rating</td>
+<td align="left">Biography</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.11e+00</td>
+<td align="right">7.60e-01</td>
+<td align="right">4.50e+00</td>
+<td align="right">6.70e+00</td>
+<td align="right">7.20e+00</td>
+<td align="right">7.60e+00</td>
+<td align="right">8.90e+00</td>
+<td align="left">▁▁▇▇▂</td>
+</tr>
+<tr class="even">
+<td align="left">rating</td>
+<td align="left">Comedy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.11e+00</td>
+<td align="right">1.02e+00</td>
+<td align="right">1.90e+00</td>
+<td align="right">5.60e+00</td>
+<td align="right">6.20e+00</td>
+<td align="right">6.80e+00</td>
+<td align="right">8.80e+00</td>
+<td align="left">▁▁▅▇▁</td>
+</tr>
+<tr class="odd">
+<td align="left">rating</td>
+<td align="left">Crime</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.92e+00</td>
+<td align="right">8.50e-01</td>
+<td align="right">4.80e+00</td>
+<td align="right">6.32e+00</td>
+<td align="right">6.90e+00</td>
+<td align="right">7.50e+00</td>
+<td align="right">9.30e+00</td>
+<td align="left">▂▇▇▃▁</td>
+</tr>
+<tr class="even">
+<td align="left">rating</td>
+<td align="left">Documentary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.66e+00</td>
+<td align="right">1.77e+00</td>
+<td align="right">1.60e+00</td>
+<td align="right">5.90e+00</td>
+<td align="right">7.40e+00</td>
+<td align="right">7.70e+00</td>
+<td align="right">8.50e+00</td>
+<td align="left">▁▁▂▂▇</td>
+</tr>
+<tr class="odd">
+<td align="left">rating</td>
+<td align="left">Drama</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.73e+00</td>
+<td align="right">9.20e-01</td>
+<td align="right">2.10e+00</td>
+<td align="right">6.20e+00</td>
+<td align="right">6.80e+00</td>
+<td align="right">7.30e+00</td>
+<td align="right">8.80e+00</td>
+<td align="left">▁▁▃▇▃</td>
+</tr>
+<tr class="even">
+<td align="left">rating</td>
+<td align="left">Family</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.50e+00</td>
+<td align="right">1.22e+00</td>
+<td align="right">5.70e+00</td>
+<td align="right">5.80e+00</td>
+<td align="right">5.90e+00</td>
+<td align="right">6.90e+00</td>
+<td align="right">7.90e+00</td>
+<td align="left">▇▁▁▁▃</td>
+</tr>
+<tr class="odd">
+<td align="left">rating</td>
+<td align="left">Fantasy</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.15e+00</td>
+<td align="right">9.60e-01</td>
+<td align="right">4.30e+00</td>
+<td align="right">5.40e+00</td>
+<td align="right">6.45e+00</td>
+<td align="right">6.80e+00</td>
+<td align="right">7.90e+00</td>
+<td align="left">▃▆▂▇▃</td>
+</tr>
+<tr class="even">
+<td align="left">rating</td>
+<td align="left">Horror</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.83e+00</td>
+<td align="right">1.01e+00</td>
+<td align="right">3.60e+00</td>
+<td align="right">5.10e+00</td>
+<td align="right">5.90e+00</td>
+<td align="right">6.45e+00</td>
+<td align="right">8.50e+00</td>
+<td align="left">▂▆▇▃▁</td>
+</tr>
+<tr class="odd">
+<td align="left">rating</td>
+<td align="left">Musical</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.75e+00</td>
+<td align="right">6.40e-01</td>
+<td align="right">6.30e+00</td>
+<td align="right">6.52e+00</td>
+<td align="right">6.75e+00</td>
+<td align="right">6.98e+00</td>
+<td align="right">7.20e+00</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">rating</td>
+<td align="left">Mystery</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.86e+00</td>
+<td align="right">8.80e-01</td>
+<td align="right">4.60e+00</td>
+<td align="right">6.57e+00</td>
+<td align="right">6.90e+00</td>
+<td align="right">7.15e+00</td>
+<td align="right">8.50e+00</td>
+<td align="left">▁▁▇▇▂</td>
+</tr>
+<tr class="odd">
+<td align="left">rating</td>
+<td align="left">Romance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.65e+00</td>
+<td align="right">6.40e-01</td>
+<td align="right">6.20e+00</td>
+<td align="right">6.43e+00</td>
+<td align="right">6.65e+00</td>
+<td align="right">6.87e+00</td>
+<td align="right">7.10e+00</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">rating</td>
+<td align="left">Sci-Fi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.66e+00</td>
+<td align="right">1.09e+00</td>
+<td align="right">5.00e+00</td>
+<td align="right">6.10e+00</td>
+<td align="right">6.40e+00</td>
+<td align="right">7.40e+00</td>
+<td align="right">8.20e+00</td>
+<td align="left">▃▃▇▃▇</td>
+</tr>
+<tr class="odd">
+<td align="left">rating</td>
+<td align="left">Thriller</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.80e+00</td>
+<td align="right">NA</td>
+<td align="right">4.80e+00</td>
+<td align="right">4.80e+00</td>
+<td align="right">4.80e+00</td>
+<td align="right">4.80e+00</td>
+<td align="right">4.80e+00</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">rating</td>
+<td align="left">Western</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.70e+00</td>
+<td align="right">2.26e+00</td>
+<td align="right">4.10e+00</td>
+<td align="right">4.90e+00</td>
+<td align="right">5.70e+00</td>
+<td align="right">6.50e+00</td>
+<td align="right">7.30e+00</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="use-ggplot-to-answer-the-following" class="section level2">
+<h2>Use <code>ggplot</code> to answer the following</h2>
+<ul>
+<li>Examine the relationship between <code>gross</code> and <code>cast_facebook_likes</code>. Produce a scatterplot and write one sentence discussing whether the number of facebook likes that the cast has received is likely to be a good predictor of how much money a movie will make at the box office. What variable are you going to map to the Y- and X- axes.</li>
+</ul>
+<p>We put “cast_facebook_likes” into the X axis and “gross” to the Y axis. There is a slight positive correlation between ‘gross’ and ‘cast_facebook_like’, although there exist many outliers, such as when likes is less than 100. Therefore, the cast is not likely to be a good predictor. However, many data points lies outside the a line of best fit, therefore, we cannot say with good confidence that it is a good predictor.</p>
+<pre class="r"><code>ggplot(movies, aes(x=cast_facebook_likes, y=gross))+ geom_point() +scale_x_log10() +geom_smooth(method =&#39;lm&#39;)</code></pre>
+<p><img src="/blogs/HW1_files/figure-html/gross_on_fblikes-1.png" width="648" style="display: block; margin: auto;" /></p>
+<ul>
+<li>Examine the relationship between <code>gross</code> and <code>budget</code>. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.</li>
+</ul>
+<p>Budget appears to be a good predictor of grossing, since the graph shows shows a positive correlation. Although when the budget is less than 1 million dollars, it is not a good predictor.</p>
+<pre class="r"><code>  ggplot(movies, aes(x=budget, y=gross))+ geom_point() + geom_smooth(method=&#39;lm&#39;, se=FALSE)+ scale_x_log10() + labs(title=&#39;relationship between budget and gross&#39;)</code></pre>
+<p><img src="/blogs/HW1_files/figure-html/gross_on_budget-1.png" width="648" style="display: block; margin: auto;" /></p>
+<ul>
+<li>Examine the relationship between <code>gross</code> and <code>rating</code>. Produce a scatterplot, faceted by <code>genre</code> and discuss whether IMDB ratings are likely to be a good predictor of how much money a movie will make at the box office. Is there anything strange in this dataset?</li>
+</ul>
+<p>Generally, some genre have much more rating than others,for instance, crime, documentary, and mystery. The others, however, have significantly less reviews. For those with high numbers of reviews, such as Action, Adventure, there exist positive correlation between gross and rating which makes IMDB rating a good predictor for those movies.</p>
+<pre class="r"><code>  ggplot(movies, aes(x=rating, y=gross))+ geom_point() +geom_smooth(method=&#39;lm&#39;)+ scale_x_log10() + facet_wrap(~genre) + theme_minimal() + labs(title = &#39;Relationship between Rating and Gross for each genre&#39;)</code></pre>
+<p><img src="/blogs/HW1_files/figure-html/gross_on_rating-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+</div>

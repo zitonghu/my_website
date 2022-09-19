@@ -1,0 +1,455 @@
+---
+slug: HW2
+title: "Session 4: Homework 2"
+author: "Study Group 7, Thirat Wongwaisayawan, Lejla Kajevic, Francesco Nicolì, Zitong Hu, Rufei Wang, Siddharth Gulati"
+date: "2022-09-19"
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    code_folding: show
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+
+
+<div id="climate-change-and-temperature-anomalies" class="section level1">
+<h1>Climate change and temperature anomalies</h1>
+<p>We can find data on the <em>Combined Land-Surface Air and Sea-Surface Water Temperature Anomalies</em> in the
+Northern Hemisphere at <a href="https://data.giss.nasa.gov/gistemp">NASA’s Goddard Institute for Space
+Studies</a>. The <a href="https://data.giss.nasa.gov/gistemp/tabledata_v4/NH.Ts+dSST.txt">tabular data of
+temperature anomalies can be found
+here</a></p>
+<pre class="r"><code>weather &lt;- 
+  read_csv(&quot;https://data.giss.nasa.gov/gistemp/tabledata_v4/NH.Ts+dSST.csv&quot;, 
+           skip = 1, 
+           na = &quot;***&quot;)</code></pre>
+<pre class="r"><code>#inspecting data.frame &#39;weather&#39;
+
+#glimpse(weather) 
+
+# selecting the year and 12 month variables
+weather_clean &lt;- weather %&gt;% 
+  select(1:13) 
+
+# converting to the dataframe to longer format (tidyweather)
+tidyweather &lt;- pivot_longer(weather_clean, cols = 2:13, names_to = &quot;Month&quot;, values_to = &quot;delta&quot;)
+
+tidyweather</code></pre>
+<pre><code>## # A tibble: 1,716 x 3
+##     Year Month delta
+##    &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+##  1  1880 Jan   -0.39
+##  2  1880 Feb   -0.53
+##  3  1880 Mar   -0.23
+##  4  1880 Apr   -0.3 
+##  5  1880 May   -0.05
+##  6  1880 Jun   -0.18
+##  7  1880 Jul   -0.21
+##  8  1880 Aug   -0.25
+##  9  1880 Sep   -0.24
+## 10  1880 Oct   -0.3 
+## # ... with 1,706 more rows</code></pre>
+<div id="plotting-information" class="section level2">
+<h2>Plotting Information</h2>
+<p>We plot the data using a time-series scatter plot, and add a
+trendline. To do that, we first need to create a new variable called
+<code>date</code> in order to ensure that the <code>delta</code> values are plot
+chronologically.</p>
+<pre class="r"><code>tidyweather &lt;- tidyweather %&gt;%
+  mutate(date = ymd(paste(as.character(Year), Month, &quot;1&quot;)),
+         month = month(date, label=TRUE),
+         year = year(date))
+
+ggplot(tidyweather, aes(x=date, y = delta))+
+  geom_point()+
+  geom_smooth(color=&quot;red&quot;) +
+  theme_bw() +
+  labs (
+    title = &quot;Weather Anomalies&quot;
+  )</code></pre>
+<p><img src="/blogs/HW2_files/figure-html/scatter_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="is-the-effect-of-increasing-temperature-more-pronounced-in-some-months" class="section level2">
+<h2>Is the effect of increasing temperature more pronounced in some months?</h2>
+<p>Use <code>facet_wrap()</code> to produce a seperate scatter plot for each month,
+again with a smoothing line.</p>
+<pre class="r"><code>ggplot(tidyweather) +
+  aes(x = date, y = delta) +
+  geom_point () +
+  geom_smooth (color = &quot;red&quot;) +
+  theme_bw() +
+  labs (title = &quot;Weather Changes by Month&quot;) +
+  facet_wrap(~ month)</code></pre>
+<p><img src="/blogs/HW2_files/figure-html/facet_wrap-1.png" width="648" style="display: block; margin: auto;" />
+- Delta on the y-axis, represents the temperature deviations from the
+expected value. The red smooth lines we drew are the trend lines for
+the temperature changes. The steeper the smooth lines are, the
+higher the rates of temperature increases.</p>
+<ul>
+<li><p>Before 1950, visually, we can see that for Januarys and Februaries,
+the effect of increasing temperature was more pronounced. For
+instance, the smooth line drawn for January is much steeper than
+that of July and August.</p></li>
+<li><p>We can tell that the year 1950 was roughly a point, after which, the
+smooth line becomes much steeper for all months compared to
+before 1950. There are months where the effect of increasing
+temperature was more pronounced, but these effects are not
+distinctive visually.</p></li>
+</ul>
+</div>
+<div id="removed-data-before-1880" class="section level2">
+<h2>Removed Data before 1880</h2>
+<p>It is sometimes useful to group data into different time periods to
+study historical data. For example, we often refer to decades such as
+1970s, 1980s, 1990s etc. to refer to a period of time. NASA calcuialtes
+a temperature anomaly, as difference form the base periof of 1951-1980.
+The code below creates a new data frame called <code>comparison</code> that groups
+data in five time periods: 1881-1920, 1921-1950, 1951-1980, 1981-2010
+and 2011-present.</p>
+<p>We remove data before 1800 and before using <code>filter</code>. Then, we use the
+<code>mutate</code> function to create a new variable <code>interval</code> which contains
+information on which period each observation belongs to. We can assign
+the different periods using <code>case_when()</code>.</p>
+<pre class="r"><code>comparison &lt;- tidyweather %&gt;% 
+  filter(Year&gt;= 1881) %&gt;%     #remove years prior to 1881
+  #create new variable &#39;interval&#39;, and assign values based on criteria below:
+  mutate(interval = case_when(
+    Year %in% c(1881:1920) ~ &quot;1881-1920&quot;,
+    Year %in% c(1921:1950) ~ &quot;1921-1950&quot;,
+    Year %in% c(1951:1980) ~ &quot;1951-1980&quot;,
+    Year %in% c(1981:2010) ~ &quot;1981-2010&quot;,
+    TRUE ~ &quot;2011-present&quot;
+  ))</code></pre>
+<p>Now that we have the <code>interval</code> variable, we can create a density plot
+to study the distribution of monthly deviations (<code>delta</code>), grouped by
+the different time periods we are interested in. Set <code>fill</code> to
+<code>interval</code> to group and colour the data by different time periods.</p>
+<pre class="r"><code>ggplot(comparison) +
+  aes(x = delta, fill = interval) +
+  geom_density(alpha = 0.3) +
+  theme_minimal(base_size = 18)</code></pre>
+<p><img src="/blogs/HW2_files/figure-html/density_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>So far, we have been working with monthly anomalies. However, we might
+be interested in average annual anomalies. We can do this by using
+<code>group_by()</code> and <code>summarise()</code>, followed by a scatter plot to display
+the result.</p>
+<pre class="r"><code>#creating yearly averages
+average_annual_anomaly &lt;- tidyweather %&gt;% 
+  group_by(Year) %&gt;%   #grouping data by Year
+  
+# creating summaries for mean delta 
+# use `na.rm=TRUE` to eliminate NA (not available) values 
+  summarise(mean_delta = mean(delta), na.rm = TRUE) 
+
+#plotting the data:
+ggplot(average_annual_anomaly) +
+  aes(x = Year, y = mean_delta) +
+  geom_point() +
+  
+  
+#Fit the best fit line, using LOESS method
+#change theme to theme_bw() to have white background + black frame around plot
+  aes(x = Year, y = mean_delta) +
+  geom_smooth(method = loess, color = &quot;red&quot;) +
+  theme_bw( base_size = 18) +
+  labs (title = &quot;Average Annual Anomolies Over Time&quot;, x = &quot;Year&quot;, y = &quot;Average Annual Temperature Change&quot;) </code></pre>
+<p><img src="/blogs/HW2_files/figure-html/averaging-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="confidence-interval-for-delta" class="section level2">
+<h2>Confidence Interval for <code>delta</code></h2>
+<div id="using-the-formula" class="section level3">
+<h3>Using the formula</h3>
+<pre class="r"><code># choose the interval 2011-present
+# what dplyr verb will you use? 
+  formula_ci &lt;- comparison %&gt;% 
+  filter(interval == &quot;2011-present&quot;) %&gt;% 
+  
+# calculate summary statistics for temperature deviation (delta) 
+# calculate mean, SD, count, SE, lower/upper 95% CI
+# what dplyr verb will you use
+    summarise(mean = mean(delta, na.rm = TRUE),
+            count = n(),
+            SD = sd(delta, na.rm = TRUE),
+            SE = SD / sqrt(count),
+            # find t critical value with n-1 degrees of freedom
+            t_critical = qt(0.975,count -1),
+            margin_of_error = SE * t_critical,
+            lower_95pct_CI = mean - margin_of_error,
+            upper_95pct_CI = mean + margin_of_error)
+  
+# print out formula_CI
+formula_ci</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##    mean count    SD     SE t_critical margin_of_error lower_95pct_CI upper_95p~1
+##   &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;           &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt;
+## 1  1.07   144 0.265 0.0221       1.98          0.0437           1.02        1.11
+## # ... with abbreviated variable name 1: upper_95pct_CI</code></pre>
+</div>
+<div id="using-infer-package" class="section level3">
+<h3>Using Infer() package</h3>
+<pre class="r"><code># calculate ci using the infer package (bootstrap simulation)
+set.seed(1234)
+boot_ci &lt;- comparison %&gt;% 
+  # select the interval of interest
+  filter(interval == &quot;2011-present&quot;) %&gt;% 
+  # specify the variable of interest
+  specify (response = delta) %&gt;% 
+  # generate bootstrap samples 
+  generate (reps = 1000, type = &quot;bootstrap&quot;) %&gt;% 
+  # find mean
+  calculate(stat = &quot;mean&quot;) %&gt;% 
+  # find the ci
+  get_confidence_interval(level = 0.95, type = &quot;percentile&quot;)
+
+# print out boot_ci
+boot_ci</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   lower_ci upper_ci
+##      &lt;dbl&gt;    &lt;dbl&gt;
+## 1     1.02     1.11</code></pre>
+<ul>
+<li>We are 95% confident that the average temperature change in the 2011-present time period is between 1.02 and 1.11 degree-celcius.</li>
+<li>We get very similar results for confidence intervals from the bootstrap method as well as the formula method.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="bidens-approval-margins" class="section level1">
+<h1>Biden’s Approval Margins</h1>
+<pre class="r"><code>approval_polllist &lt;- read.csv(&#39;https://projects.fivethirtyeight.com/biden-approval-data/approval_polllist.csv&#39;) 
+
+approval_polllist &lt;- approval_polllist %&gt;% 
+  mutate(enddate = mdy(enddate), 
+         year = year(enddate),
+         month = month(enddate), #default format in r is year ymd
+         week = isoweek(enddate)) # using lubridate to change the format of the dates. 
+
+approval_polllist&lt;- approval_polllist%&gt;%
+  filter(year == 2022) %&gt;% # filter to remove all other years other than 2022.
+  group_by(week, subgroup) %&gt;% # grouping by week then subgroup, so that we can conitnue analysis
+  summarise(app_disapp = approve-disapprove, #finding the net ratings
+          mean_approve_disapprove = mean(app_disapp), # finding mean of net ratings
+          sd_rating = sd(app_disapp), # finding sd
+          count=n(), # counting number of polls in each week
+          t_critical=qt(0.975,count-1) , #t distribution, the bigger the sample count, the faster t_critical approach 1.96
+          se_approve_disapp = sd(app_disapp)/sqrt(count), # finding standard error
+          margin_of_error = t_critical*se_approve_disapp,  
+          rating_low = mean_approve_disapprove - margin_of_error, # make our ribbon bands
+          rating_high = mean_approve_disapprove+ margin_of_error 
+         )
+
+ggplot(approval_polllist, aes(x=week, y=mean_approve_disapprove))+geom_ribbon(aes( ymax = rating_high, ymin=rating_low, fill = subgroup))+ geom_line()+ facet_grid(rows = vars(subgroup)) + labs(x = &#39;Week in 2022&#39;, y =&#39;&#39;, title = &quot;Biden&#39;s Net Approval Ratings in 2022&quot;, subtitle = &quot;Weekly Data, Approve - Disapprove, %&quot;)+ylim(-25,-5)+xlim(0,35)</code></pre>
+<p><img src="/blogs/HW2_files/figure-html/Biden-1.png" width="648" style="display: block; margin: auto;" />
+For Biden’s net approval ratings, we can see similar trends along the 3 sub-groups for the weeks in 2022.</p>
+</div>
+<div id="challenge-1-excess-rentals-in-tfl-bike-sharing" class="section level1">
+<h1>Challenge 1: Excess rentals in TfL bike sharing</h1>
+<pre class="r"><code>url &lt;- &quot;https://data.london.gov.uk/download/number-bicycle-hires/ac29363e-e0cb-47cc-a97a-e216d900a6b0/tfl-daily-cycle-hires.xlsx&quot;
+
+# Download TFL data to temporary file
+httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2022-09-06T12%3A41%3A48/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20220919%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20220919T160747Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=1e1fddc3d83522b6c784ac38a3a03324612c545eb65756cfe8f1bb9997babbe4&amp;X-Amz-SignedHeaders=host]
+##   Date: 2022-09-19 16:07
+##   Status: 200
+##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+##   Size: 180 kB
+## &lt;ON DISK&gt;  C:\Users\ZITONG~1\AppData\Local\Temp\RtmpuAT2im\file44a446a23e86.xlsx</code></pre>
+<pre class="r"><code># Use read_excel to read it as dataframe
+bike0 &lt;- read_excel(bike.temp,
+                   sheet = &quot;Data&quot;,
+                   range = cell_cols(&quot;A:B&quot;))
+
+# change dates to get year, month, and week
+bike &lt;- bike0 %&gt;% 
+  clean_names() %&gt;% 
+  rename (bikes_hired = number_of_bicycle_hires) %&gt;% 
+  mutate (year = year(day),
+          month = lubridate::month(day, label = TRUE),
+          week = isoweek(day))</code></pre>
+<div id="monthly-changes-in-in-tfl-bike-rentals" class="section level2">
+<h2>Monthly Changes in in TfL bike rentals</h2>
+<p><img src="/blogs/HW2_files/figure-html/tfl_absolute_monthly_change-1.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="weekly-changes-in-tfl-bike-rentals" class="section level2">
+<h2>Weekly Changes in TfL bike rentals</h2>
+<p>The second one looks at percentage changes from the expected level of
+weekly rentals. The two grey shaded rectangles correspond to Q2 (weeks
+14-26) and Q4 (weeks 40-52).</p>
+<p><img src="/blogs/HW2_files/figure-html/tfl_percent_change-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<div id="should-you-use-the-mean-or-the-median-to-calculate-your-expected-rentals-why" class="section level3">
+<h3>Should you use the mean or the median to calculate your expected rentals? Why?</h3>
+<p>We use the mean to calculate the expected rentals. We used the mean to calculate our expected rentals because the TFL may be more inclined to use the data for profit and revenue analysis. Mean, instead of median, may be more accurate to represent the revenue from bike rental.</p>
+</div>
+</div>
+</div>
+<div id="challenge-2-share-of-renewable-energy-production-in-the-world" class="section level1">
+<h1>Challenge 2: Share of renewable energy production in the world</h1>
+<p>The National Bureau of Economic Research (NBER) has a a very interesting
+dataset on the adoption of about 200 technologies in more than 150
+countries since 1800. This is the<a href="https://www.nber.org/research/data/cross-country-historical-adoption-technology">Cross-country Historical Adoption of
+Technology (CHAT) dataset</a>.</p>
+<p>The following is a description of the variables</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>variable</strong></th>
+<th><strong>class</strong></th>
+<th><strong>description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>variable</td>
+<td>character</td>
+<td>Variable name</td>
+</tr>
+<tr class="even">
+<td>label</td>
+<td>character</td>
+<td>Label for variable</td>
+</tr>
+<tr class="odd">
+<td>iso3c</td>
+<td>character</td>
+<td>Country code</td>
+</tr>
+<tr class="even">
+<td>year</td>
+<td>double</td>
+<td>Year</td>
+</tr>
+<tr class="odd">
+<td>group</td>
+<td>character</td>
+<td>Group (consumption/production)</td>
+</tr>
+<tr class="even">
+<td>category</td>
+<td>character</td>
+<td>Category</td>
+</tr>
+<tr class="odd">
+<td>value</td>
+<td>double</td>
+<td>Value (related to label)</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>technology &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-19/technology.csv&#39;)
+
+#get all technologies
+labels &lt;- technology %&gt;% 
+  distinct(variable, label)
+
+# Get country names using &#39;countrycode&#39; package
+technology &lt;- technology %&gt;% 
+  filter(iso3c != &quot;XCD&quot;) %&gt;% 
+  mutate(iso3c = recode(iso3c, &quot;ROM&quot; = &quot;ROU&quot;),
+         country = countrycode(iso3c, origin = &quot;iso3c&quot;, destination = &quot;country.name&quot;),
+         country = case_when(
+           iso3c == &quot;ANT&quot; ~ &quot;Netherlands Antilles&quot;,
+           iso3c == &quot;CSK&quot; ~ &quot;Czechoslovakia&quot;,
+           iso3c == &quot;XKX&quot; ~ &quot;Kosovo&quot;,
+           TRUE           ~ country))
+
+#make smaller dataframe on energy
+energy &lt;- technology %&gt;% 
+  filter(category == &quot;Energy&quot;)
+
+# download CO2 per capita from World Bank using {wbstats} package
+# https://data.worldbank.org/indicator/EN.ATM.CO2E.PC
+co2_percap &lt;- wb_data(country = &quot;countries_only&quot;, 
+                      indicator = &quot;EN.ATM.CO2E.PC&quot;, 
+                      start_date = 1970, 
+                      end_date = 2022,
+                      return_wide=FALSE) %&gt;% 
+  filter(!is.na(value)) %&gt;% 
+  #drop unwanted variables
+  select(-c(unit, obs_status, footnote, last_updated))
+
+# get a list of countries and their characteristics
+# we just want to get the region a country is in and its income level
+countries &lt;-  wb_cachelist$countries %&gt;% 
+  select(iso3c,region,income_level)</code></pre>
+<p>This is a very rich data set, not just for energy and CO2 data, but for many other technologies. In our case, we just need to produce a couple of graphs– at this stage, the emphasis is on data manipulation, rather than making the graphs gorgeous.</p>
+<p>First, produce a graph with the countries with the highest and lowest % contribution of renewables in energy production. This is made up of <code>elec_hydro</code>, <code>elec_solar</code>, <code>elec_wind</code>, and <code>elec_renew_other</code>. You may want to use the <em>patchwork</em> package to assemble the two charts next to each other.</p>
+<pre class="r"><code>library(patchwork)
+
+en_new &lt;- energy %&gt;%  #filter energy dataset for year + create new variable for all renewable energy
+  filter(year == 2019) %&gt;% 
+  group_by(country, variable) %&gt;% 
+  summarise(count = sum(value)) %&gt;% 
+  ungroup() %&gt;% 
+  pivot_wider(names_from = &quot;variable&quot;, values_from = &quot;count&quot;) %&gt;% 
+  mutate(renew_en = elec_hydro + elec_solar + elec_wind + elec_renew_other)
+
+en_new[is.na(en_new)] &lt;- 0 #establish renewable energy usage as a percentage of energy as a whole
+en_new &lt;- en_new %&gt;% 
+mutate(percent = renew_en/ elecprod*100) %&gt;% 
+arrange(desc(percent)) %&gt;% 
+filter(renew_en != 0, percent != Inf)
+en_new</code></pre>
+<pre><code>## # A tibble: 196 x 13
+##    country       elec_~1 elec_~2 elec_~3 elec_~4 elec_~5 elec_~6 elec_~7 elec_~8
+##    &lt;chr&gt;           &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+##  1 Albania             0 0         5.15        0 0        0        0.022 0      
+##  2 Nepal               0 0         5.33        0 0        0        0.08  0.014  
+##  3 Lesotho             0 0         0.541       0 0        0        0.001 0      
+##  4 Bhutan              0 0         6.61        0 4.67e-5  0        0.001 0.001  
+##  5 Paraguay            0 0        48.9         0 1.88e-3  0.886    0     0      
+##  6 Iceland             0 0        13.3         0 2.82e-3  5.93     0     0.00642
+##  7 Congo - Kins~       0 0.00246  11.0         0 1.30e-3  0.0290   0.01  0      
+##  8 Ethiopia            0 0        14.0         0 5.41e-3  0.0294   0.02  0.533  
+##  9 Central Afri~       0 0         0.15        0 1   e-3  0        0     0      
+## 10 Costa Rica          0 0         7.75        0 9.02e-2  1.68     0.076 1.80   
+## # ... with 186 more rows, 4 more variables: elecprod &lt;dbl&gt;, elec_cons &lt;dbl&gt;,
+## #   renew_en &lt;dbl&gt;, percent &lt;dbl&gt;, and abbreviated variable names 1: elec_coal,
+## #   2: elec_gas, 3: elec_hydro, 4: elec_nuc, 5: elec_oil, 6: elec_renew_other,
+## #   7: elec_solar, 8: elec_wind</code></pre>
+<pre class="r"><code>#create plot 1 for highest % of countries with renewable energy
+c2p1 &lt;- ggplot(en_new %&gt;% slice_max(order_by = percent, n = 20), aes(x = percent, y = fct_reorder(country, percent))) + geom_col() + 
+labs(title = &quot;Highest and Lowest Percentage of Renewables&quot;, x = NULL, y = NULL)
+c2p1</code></pre>
+<p><img src="/blogs/HW2_files/figure-html/unnamed-chunk-1-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#create plot 2 for lowest % of countries with renewable energy
+dfsid&lt;- en_new %&gt;%
+  slice_min(order_by = percent, n=20)
+
+
+c2p2 &lt;- ggplot(dfsid, aes(x= percent, y=fct_reorder(country, percent))) + geom_col() + labs(title =&#39;graph2&#39;,y = NULL, x = NULL)
+c2p2</code></pre>
+<p><img src="/blogs/HW2_files/figure-html/unnamed-chunk-1-2.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#combining plots
+c2p1 + c2p2</code></pre>
+<p><img src="/blogs/HW2_files/figure-html/unnamed-chunk-1-3.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Second, you can produce an animation to explore the relationship between CO2 per capita emissions and the deployment of renewables. As the % of energy generated by renewables goes up, do CO2 per capita emissions seem to go down?</p>
+<p>To create this animation is actually straight-forward. You manipulate your date, and the create the graph in the normal ggplot way. the only <code>gganimate</code> layers you need to add to your graphs are</p>
+<pre><code>  labs(title = &#39;Year: {frame_time}&#39;, 
+       x = &#39;% renewables&#39;, 
+       y = &#39;CO2 per cap&#39;) +
+  transition_time(year) +
+  ease_aes(&#39;linear&#39;)</code></pre>
+<pre class="r"><code>library(gifski)
+library(png)
+
+new_co2_percap &lt;- merge(co2_percap, countries, by=&quot;iso3c&quot;) #merge all the data into one  dataset
+new_co2_percap &lt;- merge(new_co2_percap, en_new, by=&quot;country&quot;)
+
+library(gapminder)
+library(gganimate)
+library(av)
+library(tibble)
+data &lt;- new_co2_percap[,c(1,2,6,7,9,21)] #selecting columnns from above dataset
+library(rmarkdown)
+
+#plot and animate the graph
+ggplot(data, aes(x=percent, y=value, color=income_level)) + geom_point() + facet_wrap(~income_level, nrow = 2) + labs(title = &#39;Year:{round(frame_time, 0)}&#39;, x=&#39;% of renewable resources&#39;, y=&#39;CO2 present per cap&#39;) + transition_time(date) + ease_aes(&#39;linear&#39;) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="/blogs/HW2_files/figure-html/unnamed-chunk-2-1.gif" style="display: block; margin: auto;" /></p>
+</div>
